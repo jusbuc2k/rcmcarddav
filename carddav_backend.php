@@ -272,6 +272,8 @@ class carddav_backend extends rcube_addressbook
 	if($this->config['presetname']) {
 		if($prefs[$this->config['presetname']]['readonly'])
 			$this->readonly = true;
+		if($prefs[$this->config['presetname']]['secret'])
+			$this->config['secret'] = $prefs[$this->config['presetname']]['secret'];
 	}
 
 	$this->coltypes = array( /* {{{ */
@@ -634,8 +636,14 @@ EOF
 	if($carddav['username'] === '%u')
 		$carddav['username'] = $_SESSION['username'];
 	if($carddav['password'] === '%p')
-		$carddav['password'] = $rcmail->decrypt($_SESSION['password']);
-	$url = str_replace("%u", $carddav['username'], $url);
+		$carddav['password'] = $rcmail->decrypt($_SESSION['password']);	
+	if($carddav['password'] == '%hmac' && $carddav['secret']){		
+		$now = time();
+		$salt = gmdate('YmdH', $now);
+		$carddav['password'] = hash_hmac('sha256', $_SESSION['username'].$salt, $carddav['secret'], false);
+	}
+	
+	$url = str_replace("%u", $carddav['username'], $url);	
 
 	self::debug("cdfopen: $caller requesting $url");
 
@@ -2444,4 +2452,6 @@ EOF
 		" WHERE $idfield $dspec" );
 	return $dbh->affected_rows($sql_result);
 	}}}
+	
+	
 }

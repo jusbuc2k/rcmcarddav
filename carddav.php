@@ -128,13 +128,13 @@ class carddav extends rcube_plugin
 
 			unset($existing_presets[$presetname]);
 
-		} else { // create new
+		} else { // create new			
 			$preset['presetname'] = $presetname;
 			$preset['password']   = carddav_backend::encrypt_password($preset['password']);
 			$abname = $preset['name'];
-
-			$srvs = carddav_backend::find_addressbook($preset);
-			if(is_array($srvs)) {
+			
+			$srvs = carddav_backend::find_addressbook($preset);	
+			if(is_array($srvs)) {			
 			foreach($srvs as $key => $srv){
 				if($srv[name]) {
 					if($preset[carddav_name_only])

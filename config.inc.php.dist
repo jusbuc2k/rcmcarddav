@@ -68,6 +68,8 @@ $prefs['<Presetname>'] = array(
 //               to '%p' to use the roundcube password. The password will not
 //               be stored in the database when using %p.
 //
+//				 %hmac can be used for hmac authentication, see 'secret' below.
+//
 // url:          URL where to find the CardDAV addressbook(s). If the given URL
 //               refers directly to an addressbook, only this single
 //               addressbook will be added. If the URL points somewhere in the
@@ -124,7 +126,37 @@ $prefs['<Presetname>'] = array(
 //                 change the key of the preset and change the URL. Addressbooks
 //                 belonging to the old preset will be deleted upon the next
 //                 login of the user and freshly created.
-
+//
+// secret:		 A secret key to use for hmac-based authentication
+//				
+//				 Hmac based authentication is designed to be used with a custom
+//				 fork of Baikal that supports it.
+//				
+//				 While the algoritm is semi-secure, it is *not* designed to be used
+//				 across a untrusted network (i.e. The Internet).
+//
+//				 It allows the configuration of a preset addressbook 
+//				 that does not require a password for the user, but rather
+// 				 Baikal and Roundcube share a secret key specified by this setting.
+//
+//				 To configure:
+//				   1. Configure the preset as described above
+//				  2. Set the preset 'password' to '%hmac'
+//				  3. Set the preset 'secret' to the shared secret 
+//				  4. Configure Baikal to use the hmac auth method with the same secret
+//	
+//				  Note: The 'secret' field is not stored in the database, it is only
+//				  stored in the preset configuration here.
+//			
+//				  When %hmac is configured as the password, the password sent
+//				  to the CardDAV backend will be a hash of the username and the current
+//				  year, month, day, and hour generated using hmac-sha256 using
+// 				  the given secret. The following shows the message format:
+//
+//					UsernameYYYYMMDDHH
+//				
+//				  The current GMT date/time will be used.
+//
 
 // How Preset Updates work
 //
