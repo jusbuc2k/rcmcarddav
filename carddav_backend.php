@@ -637,7 +637,11 @@ EOF
 		$carddav['username'] = $_SESSION['username'];
 	if($carddav['password'] === '%p')
 		$carddav['password'] = $rcmail->decrypt($_SESSION['password']);	
-	if($carddav['password'] == '%hmac' && $carddav['secret']){		
+	if($carddav['password'] == '%hmac' && $carddav['secret']){
+		// If the hmac method is used, we force the username field
+		// to prevent them from entering another user's name
+		// which would give them access to the other user's address book.		
+		$carddav['username'] = $_SESSION['username'];
 		$now = time();
 		$salt = gmdate('YmdH', $now);
 		$carddav['password'] = hash_hmac('sha256', $_SESSION['username'].$salt, $carddav['secret'], false);
